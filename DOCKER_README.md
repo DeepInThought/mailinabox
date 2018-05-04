@@ -53,3 +53,5 @@ About DeepInThought
 [@DeepInThought](https://github.com/DeepInThought) is a [St. Louis, Missouri](https://en.wikipedia.org/wiki/St._Louis) tech startup.  
 * Official website is in development.
 * Feel free to contact me at [support@deepinthought.io](mailto:support@deepinthought.io).  
+
+![DeepIT](https://raw.githubusercontent.com/DeepInThought/deep-www/master/docs/images/deep_main.png)
