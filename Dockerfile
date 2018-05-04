@@ -15,10 +15,14 @@ COPY --from=PYTHON_BUILDER /usr/src/app /usr/local/lib/mailinabox
 # STORAGE_ROOT=/home/user-data according to setup/questions.sh
 VOLUME /home/user-data
 
-RUN set -ex; \
-    add-apt-repository -y ppa:mail-in-a-box/ppa && apt-get update; \
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
-    rm -rf /var/lib/apt/lists/*
+# make sure we're fully up-to-date and add the ppa:mail-in-a-box/ppa repository
+RUN sh -xc 'apt-get update && apt-get dist-upgrade -y' \
+    echo "# adding mail-in-a-box apt ppa's to sources.list" \
+    echo "deb http://ppa.launchpad.net/mail-in-a-box/ppa/ubuntu trusty main" >> "/etc/apt/sources.list" \
+    echo "deb-src http://ppa.launchpad.net/mail-in-a-box/ppa/ubuntu trusty main" >> "/etc/apt/sources.list" \
+    apt-get update \
+# cleanup time
+    apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
 
 # Install packages needed by Mail-in-a-Box.
 # ADD containers/docker/apt_package_list.txt /tmp/mailinabox_apt_package_list.txt
@@ -41,7 +45,7 @@ RUN set -ex; \
 # ARG necessary for build variables to pass. #
 ARG BUILD_DATE 
 ARG VCS_REF
-ARG VERSION
+ARG BUILD_VERSION
 
 # ********** Information ********** #
 # Following label schema per http://label-schema.org/rc1/ and build hook for dynamic org.label-schema.build-date & vcs-ref labeling. #
@@ -54,8 +58,8 @@ LABEL org.label-schema.name="deepinthought/mailinabox" \
     org.label-schema.schema-version="1.0.0-rc1" \
     org.label-schema.url="https://github.com/DeepInThought/mailinabox" \
     org.label-schema.vendor="DeepInThought <support@deepinthought.io>" \
-    org.label-schema.version=${VERSION:-0.0.1} \
+    org.label-schema.version=${BUILD_VERSION}:-0.0.1} \
     org.label-schema.docker.cmd="docker run --rm -it -p 25:25 -p 443:443 -p 4190:4190 -p 993:993 -p 995:995 -p 587:587 -p 80:80 deepinthought/mailinabox"
 
 # Get ready to run command 
-ENTRYPOINT ["./setup/start.sh"]
+ENTRYPOINT ["./containers/docker/scripts/release.sh"]
