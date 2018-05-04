@@ -5,3 +5,7 @@ tools/__pycache__/
 externals/
 .env
 .vagrant
+
+# .gitignore for vscode related items
+.vscode/
+*.code-workspace
